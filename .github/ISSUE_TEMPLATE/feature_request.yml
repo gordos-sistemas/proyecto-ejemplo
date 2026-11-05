@@ -1,0 +1,71 @@
+
+name: "Propuesta de funcionalidad"
+description: "Proponer una mejora o nueva funcionalidad"
+title: "[FEATURE] "
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por proponer una mejora.
+        Explicá qué problema resolvería y cómo beneficiaría
+        al proyecto o a sus usuarios.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Problema o necesidad"
+      description: "¿Qué problema querés resolver?"
+      placeholder: "Actualmente los usuarios no pueden..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Solución propuesta"
+      description: "Describí cómo debería funcionar."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Alternativas consideradas"
+      description: "¿Evaluaste otras soluciones?"
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: "Criterios de aceptación"
+      description: "¿Cómo sabremos que está terminada?"
+      placeholder: |
+        - [ ] El usuario puede...
+        - [ ] La funcionalidad permite...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Prioridad sugerida"
+      description: "La prioridad final la definen los maintainers."
+      options:
+        - Baja
+        - Media
+        - Alta
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Verificaciones"
+      options:
+        - label: "Busqué propuestas similares antes de crear esta."
+          required: true
+        - label: "La propuesta no incluye información sensible."
+          required: true

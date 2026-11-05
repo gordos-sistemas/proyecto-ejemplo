@@ -1,0 +1,86 @@
+
+name: Security Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scanning:
+    name: Secret scanning
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Gitleaks CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          VERSION="8.24.3"
+          ARCHIVE="gitleaks_${VERSION}_linux_x64.tar.gz"
+
+          curl --fail --location --silent --show-error \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/${ARCHIVE}" \
+            --output gitleaks.tar.gz
+
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install -m 755 gitleaks /usr/local/bin/gitleaks
+
+          gitleaks version
+
+      - name: Scan repository history
+        shell: bash
+        run: |
+          set -euo pipefail
+          gitleaks git \
+            --redact \
+            --verbose \
+            --exit-code 1 \
+            .
+
+  repository-validation:
+    name: Repository validation
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check required files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=(
+            "README.md"
+            "LICENSE"
+            "CONTRIBUTING.md"
+            "SECURITY.md"
+            ".github/CODEOWNERS"
+            ".github/PULL_REQUEST_TEMPLATE.md"
+            ".github/ISSUE_TEMPLATE/bug_report.yml"
+            ".github/ISSUE_TEMPLATE/feature_request.yml"
+          )
+
+          for file in "${files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Missing required file: $file"
+              exit 1
+            fi
+          done
+
+          echo "All required files exist."
