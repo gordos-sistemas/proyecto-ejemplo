@@ -1,0 +1,64 @@
+
+name: Security Checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scanning:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Scan repository with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  repository-validation:
+    name: Repository validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check required files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          files=(
+            "README.md"
+            "LICENSE"
+            "CONTRIBUTING.md"
+            "SECURITY.md"
+            ".github/CODEOWNERS"
+            ".github/PULL_REQUEST_TEMPLATE.md"
+            ".github/ISSUE_TEMPLATE/bug_report.yml"
+            ".github/ISSUE_TEMPLATE/feature_request.yml"
+          )
+
+          for file in "${files[@]}"; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Missing required file: $file"
+              exit 1
+            fi
+          done
+
+          echo "All required files exist."
