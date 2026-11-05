@@ -1,0 +1,10 @@
+
+# Responsables de proyecto-ejemplo
+# Los cambios requieren revision de los maintainers.
+
+* @gordos-sistemas/maintainers-proyecto-ejemplo
+
+# Archivos de gobernanza y seguridad
+/.github/ @gordos-sistemas/maintainers-proyecto-ejemplo
+/SECURITY.md @gordos-sistemas/maintainers-proyecto-ejemplo
+/CONTRIBUTING.md @gordos-sistemas/maintainers-proyecto-ejemplo
